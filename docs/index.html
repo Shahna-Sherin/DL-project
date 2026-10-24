@@ -1,475 +1,148 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Malayalam AI Translator</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f5f8f5;
-      color: #20352c;
-      min-height: 100vh;
-    }
-
-    header {
-      background: white;
-      padding: 20px 7%;
-      border-bottom: 1px solid #e4ebe5;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo {
-      background: #176b50;
-      color: white;
-      width: 44px;
-      height: 44px;
-      border-radius: 13px;
-      display: grid;
-      place-items: center;
-      font-size: 23px;
-      flex-shrink: 0;
-    }
-
-    header h1 {
-      font-size: 20px;
-    }
-
-    header p {
-      color: #75867b;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    main {
-      width: min(1000px, 90%);
-      margin: 55px auto;
-    }
-
-    .intro {
-      text-align: center;
-      margin-bottom: 35px;
-    }
-
-    .tag {
-      display: inline-block;
-      color: #176b50;
-      background: #e2f2e8;
-      padding: 7px 13px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 18px;
-    }
-
-    .intro h2 {
-      font-size: clamp(27px, 4vw, 40px);
-      letter-spacing: -1.2px;
-      margin-bottom: 12px;
-    }
-
-    .intro p {
-      color: #75867b;
-      line-height: 1.7;
-    }
-
-    .translator {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .panel {
-      background: white;
-      border: 1px solid #e2eae3;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 8px 28px #244d3210;
-      min-width: 0;
-    }
-
-    .panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 18px 20px;
-      border-bottom: 1px solid #edf1ed;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .language {
-      color: #176b50;
-      background: #e9f5ed;
-      padding: 7px 11px;
-      border-radius: 8px;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    textarea,
-    .output {
-      display: block;
-      width: 100%;
-      min-height: 230px;
-      padding: 22px;
-      border: none;
-      outline: none;
-      resize: vertical;
-      font: 16px/1.8 'Inter', sans-serif;
-      color: #20352c;
-      background: transparent;
-    }
-
-    textarea::placeholder {
-      color: #a0aaa3;
-    }
-
-    .output {
-      font-family: 'Noto Sans Malayalam', sans-serif;
-      overflow-wrap: anywhere;
-      white-space: pre-wrap;
-    }
-
-    .panel-foot {
-      border-top: 1px solid #edf1ed;
-      padding: 13px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: #89958c;
-      font-size: 12px;
-      gap: 10px;
-    }
-
-    button {
-      border: none;
-      cursor: pointer;
-      border-radius: 9px;
-      padding: 10px 15px;
-      font: 500 13px 'Inter', sans-serif;
-      transition: background 0.2s, opacity 0.2s;
-    }
-
-    button:focus-visible,
-    textarea:focus-visible {
-      outline: 2px solid #176b50;
-      outline-offset: 3px;
-    }
-
-    .clear-btn,
-    .copy-btn {
-      background: #edf4ef;
-      color: #176b50;
-    }
-
-    .clear-btn:hover,
-    .copy-btn:hover {
-      background: #dcece0;
-    }
-
-    .translate-wrap {
-      display: flex;
-      justify-content: center;
-      margin: 25px 0;
-    }
-
-    .translate-btn {
-      background: #176b50;
-      color: white;
-      padding: 15px 28px;
-      font-size: 15px;
-      font-weight: 600;
-      box-shadow: 0 6px 16px #176b5030;
-    }
-
-    .translate-btn:hover {
-      background: #10543e;
-    }
-
-    .translate-btn:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
-
-    .status {
-      text-align: center;
-      color: #75867b;
-      font-size: 13px;
-      line-height: 1.6;
-      margin: 12px 0;
-      min-height: 20px;
-    }
-
-    .status.error {
-      color: #b42318;
-    }
-
-    .examples {
-      text-align: center;
-      margin-top: 32px;
-      color: #75867b;
-      font-size: 13px;
-    }
-
-    .example {
-      display: inline-block;
-      margin: 12px 4px 0;
-      padding: 9px 13px;
-      border: 1px solid #dce8de;
-      background: white;
-      border-radius: 20px;
-      color: #426151;
-    }
-
-    .example:hover {
-      background: #e9f5ed;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #89958c;
-      font-size: 12px;
-    }
-
-    @media (max-width: 700px) {
-      main {
-        margin: 35px auto;
-      }
-
-      .translator {
-        grid-template-columns: 1fr;
-      }
-
-      textarea,
-      .output {
-        min-height: 160px;
-      }
-
-      header {
-        padding: 16px 5%;
-      }
-
-      .intro p {
-        font-size: 14px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <div class="logo" aria-hidden="true">അ</div>
-    <div>
-      <h1>Malayalam AI Translator</h1>
-      <p>English to Malayalam · Neural Machine Translation</p>
-    </div>
-  </header>
-
-  <main>
-    <section class="intro">
-      <div class="tag">✦ AI-POWERED TRANSLATION</div>
-      <h2>Words connect worlds.</h2>
-      <p>Translate English sentences into Malayalam with your neural machine translation project.</p>
-    </section>
-
-    <section class="translator">
-      <div class="panel">
-        <div class="panel-head">
-          <span>Translate from</span>
-          <span class="language">English · EN</span>
-        </div>
-
-        <textarea
-          id="englishInput"
-          maxlength="2000"
-          placeholder="Type your English sentence here..."
-          aria-label="English sentence"
-        ></textarea>
-
-        <div class="panel-foot">
-          <span id="charCount">0 / 2000</span>
-          <button class="clear-btn" id="clearBtn" type="button">
-            Clear text
-          </button>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <span>Translation</span>
-          <span class="language">Malayalam · ML</span>
-        </div>
-
-        <div
-          class="output"
-          id="malayalamOutput"
-          lang="ml"
-          aria-live="polite"
-        ></div>
-
-        <div class="panel-foot">
-          <span>Malayalam output</span>
-          <button class="copy-btn" id="copyBtn" type="button">
-            Copy result
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <div class="translate-wrap">
-      <button class="translate-btn" id="translateBtn" type="button">
-        Translate to Malayalam →
-      </button>
-    </div>
-
-    <p class="status" id="status" role="status">
-      Enter an English sentence to get started.
-    </p>
-
-    <section class="examples">
-      Try an example
-      <br>
-      <button class="example" type="button" data-text="Good morning!">
-        Good morning!
-      </button>
-      <button class="example" type="button" data-text="How are you?">
-        How are you?
-      </button>
-      <button class="example" type="button" data-text="I will decide tomorrow.">
-        I will decide tomorrow.
-      </button>
-    </section>
-  </main>
-
-  <footer>
-    English–Malayalam Neural Machine Translation · Academic Project
-  </footer>
-
-  <script>
-    const input = document.getElementById('englishInput');
-    const output = document.getElementById('malayalamOutput');
-    const status = document.getElementById('status');
-    const translateBtn = document.getElementById('translateBtn');
-    const charCount = document.getElementById('charCount');
-    const clearBtn = document.getElementById('clearBtn');
-    const copyBtn = document.getElementById('copyBtn');
-
-    // FastAPI backend must be running at this address.
-    const API_URL = 'http://127.0.0.1:8000/translate';
-
-    function setStatus(message, isError = false) {
-      status.textContent = message;
-      status.classList.toggle('error', isError);
-    }
-
-    input.addEventListener('input', () => {
-      charCount.textContent = `${input.value.length} / 2000`;
-    });
-
-    // Clear both the English input and Malayalam output.
-    clearBtn.addEventListener('click', () => {
-      input.value = '';
-      output.textContent = '';
-      charCount.textContent = '0 / 2000';
-      setStatus('Enter an English sentence to get started.');
-      input.focus();
-    });
-
-    // Copy the Malayalam translation.
-    copyBtn.addEventListener('click', async () => {
-      const translatedText = output.textContent.trim();
-
-      if (!translatedText) {
-        setStatus('There is no translation to copy yet.', true);
-        return;
-      }
-
-      try {
-        await navigator.clipboard.writeText(translatedText);
-        setStatus('Translation copied successfully!');
-      } catch (error) {
-        setStatus(
-          'Copy unavailable. Please select and copy the text manually.',
-          true
-        );
-      }
-    });
-
-    // Load example sentences into the input.
-    document.querySelectorAll('.example').forEach(button => {
-      button.addEventListener('click', () => {
-        input.value = button.dataset.text;
-        input.dispatchEvent(new Event('input'));
-        setStatus('Example loaded. Click Translate to Malayalam.');
-        input.focus();
-      });
-    });
-
-    // Send English text to the FastAPI backend.
-    translateBtn.addEventListener('click', async () => {
-      const english = input.value.trim();
-
-      if (!english) {
-        setStatus('Please enter an English sentence first.', true);
-        input.focus();
-        return;
-      }
-
-      translateBtn.disabled = true;
-      translateBtn.textContent = 'Translating...';
-      output.textContent = '';
-      setStatus('Your AI model is translating the sentence. Please wait.');
-
-      try {
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ text: english })
-        });
-
-        if (!response.ok) {
-          throw new Error(`Server returned status ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (typeof data.malayalam !== 'string' || !data.malayalam.trim()) {
-          throw new Error('The API returned an empty translation.');
-        }
-
-        output.textContent = data.malayalam;
-        setStatus('Translation completed successfully!');
-      } catch (error) {
-        console.error('Translation error:', error);
-        output.textContent = '';
-        setStatus(
-          'Could not connect to the translation API. Make sure the backend and model are running.',
-          true
-        );
-      } finally {
-        translateBtn.disabled = false;
-        translateBtn.textContent = 'Translate to Malayalam →';
-      }
-    });
-  </script>
-</body>
-</html>
+import gradio as gr
+import spaces
+import torch
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+MODEL_NAME = "facebook/nllb-200-distilled-600M"
+
+# Load the translation model
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
+tokenizer.src_lang = "eng_Latn"
+
+
+@spaces.GPU
+def translate_to_malayalam(text):
+    if not text or not text.strip():
+        return ""
+
+    # Run the model on the allocated GPU
+    model.to("cuda")
+
+    inputs = tokenizer(
+        text.strip(),
+        return_tensors="pt",
+        truncation=True,
+        max_length=256
+    ).to("cuda")
+
+    with torch.no_grad():
+        translated = model.generate(
+            **inputs,
+            forced_bos_token_id=tokenizer.convert_tokens_to_ids("mal_Mlym"),
+            max_new_tokens=128
+        )
+
+    return tokenizer.batch_decode(
+        translated,
+        skip_special_tokens=True
+    )[0]
+
+
+css = """
+.gradio-container {
+    background: #f5fbf7 !important;
+}
+#main-title {
+    text-align: center;
+    color: #16834a;
+}
+#subtitle {
+    text-align: center;
+    color: #52705e;
+}
+#translate-panel {
+    border: 1px solid #d7eadc;
+    border-radius: 14px;
+    padding: 18px;
+    background: white;
+}
+#translate-btn {
+    background: #16834a;
+    color: white;
+    border-radius: 10px;
+}
+"""
+
+
+with gr.Blocks(
+    title="Malayalam AI Translator",
+    css=css
+) as demo:
+
+    gr.Markdown(
+        "# Malayalam AI Translator",
+        elem_id="main-title"
+    )
+
+    gr.Markdown(
+        "English to Malayalam · Neural Machine Translation",
+        elem_id="subtitle"
+    )
+
+    with gr.Row():
+        with gr.Column(elem_id="translate-panel"):
+            gr.Markdown("### Translate from · English")
+
+            english = gr.Textbox(
+                placeholder="Enter English text here...",
+                lines=9,
+                max_lines=15,
+                label="English text"
+            )
+
+            counter = gr.Markdown("0 / 2000")
+
+            clear = gr.Button("Clear text")
+
+        with gr.Column(elem_id="translate-panel"):
+            gr.Markdown("### Translation · Malayalam")
+
+            malayalam = gr.Textbox(
+                lines=9,
+                max_lines=15,
+                label="Malayalam translation",
+                interactive=False
+            )
+
+            copy = gr.Button("Copy result")
+
+    translate = gr.Button(
+        "Translate to Malayalam →",
+        elem_id="translate-btn"
+    )
+
+    status = gr.Markdown("")
+
+    english.change(
+        lambda text: f"{len(text or '')} / 2000",
+        inputs=english,
+        outputs=counter
+    )
+
+    clear.click(
+        lambda: ("", "", "0 / 2000", ""),
+        outputs=[english, malayalam, counter, status]
+    )
+
+    translate.click(
+        fn=translate_to_malayalam,
+        inputs=english,
+        outputs=malayalam,
+        api_name="translate"
+    )
+
+    copy.click(
+        fn=None,
+        inputs=malayalam,
+        outputs=None,
+        js="""(text) => {
+            if (text) {
+                navigator.clipboard.writeText(text);
+            }
+        }"""
+    )
+
+
+demo.launch(show_api=True)
